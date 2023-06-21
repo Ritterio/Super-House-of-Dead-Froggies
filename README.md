@@ -18,7 +18,7 @@ Make sure Pygame is installed:
 
 Run the Python script using a Python interpreter:
 
-    python game.py
+    python main.py
 
 ## Game Controls
 
