@@ -20,18 +20,17 @@ class Camera:
         x = -target.rect.x + int(SCREEN_WIDTH / 2)
         y = -target.rect.y + int(SCREEN_HEIGHT / 2)
 
-        # Ograniczenie ruchu kamery do granic planszy
-        x = min(0, x)  # Lewa krawędź
-        y = min(0, y)  # Górna krawędź
-        x = max(-(self.width - SCREEN_WIDTH), x)  # Prawa krawędź
-        y = max(-(self.height - SCREEN_HEIGHT), y)  # Dolna krawędź
+        # Ograniczenie ruchu kamery
+        x = min(0, x)
+        y = min(0, y)
+        x = max(-(self.width - SCREEN_WIDTH), x)
+        y = max(-(self.height - SCREEN_HEIGHT), y)
 
         self.camera = pygame.Rect(x, y, self.width, self.height)
 
-class Character(pygame.sprite.Sprite): #player i enemy
+class Character(pygame.sprite.Sprite):
     def __init__(self, all_sprites, camera):
         super().__init__(all_sprites)
-        # Inicjalizacja postaci
         self.speed = 5
         self.camera = camera
         self.collided = False
@@ -80,11 +79,10 @@ class Player(Character):
             if not keys[pygame.K_SPACE]:
                 self.space_pressed = False                
 
-        # Sprawdzenie zwolnienia klawisza skoku
+        # sprawdzenie zwolnienia spacji
         if not keys[pygame.K_UP] and self.vertical_speed < 0:
             self.vertical_speed = 0
 
-        # Skok
         if keys[pygame.K_UP] and self.vertical_speed == 0 and not self.is_jumping:
             SOUNDS['JUMP'].play()
             self.vertical_speed = -self.jump_power
@@ -96,18 +94,18 @@ class Player(Character):
         # Sprawdzenie kolizji z platformami
         collision_platform = pygame.sprite.spritecollideany(self, floors)
         if collision_platform:
-            if self.vertical_speed > 0:  # Kolizja z platformą, poruszanie się w dół
+            if self.vertical_speed > 0:
                 self.rect.bottom = collision_platform.rect.top
                 self.vertical_speed = 0
                 self.is_jumping = False
-            elif self.vertical_speed < 0:  # Kolizja z platformą, poruszanie się w górę
+            elif self.vertical_speed < 0:
                 self.rect.top = collision_platform.rect.bottom
                 self.vertical_speed = 0
                 self.is_jumping = False
             else:
                 self.is_jumping = True
 
-        # Ograniczenia ruchu gracza do granic ekranu
+        # ograniczenia ruchu gracza
         if self.rect.left < 0 + WALL_THICKNESS:
             self.rect.left = WALL_THICKNESS
         if self.rect.right > SCREEN_WIDTH - WALL_THICKNESS:
@@ -140,8 +138,8 @@ class Bullet(pygame.sprite.Sprite):
         super().__init__()
         self.image = IMAGES['BULLET']
         self.rect = self.image.get_rect()
-        self.rect.center = (x, y)  # Ustaw początkowe położenie pocisku na środek gracza
-        self.speed = 10  # Prędkość pocisku
+        self.rect.center = (x, y) # środek Player
+        self.speed = 10
         self.direction = direction
         if direction == 'left':
             self.image = pygame.transform.flip(self.image, True, False)
@@ -176,8 +174,8 @@ class Game:
 
     def generate_floors(self):
         self.floors = []
-        self.floor_height = int(SCREEN_HEIGHT * 0.45)  # Wysokość piętra
-        self.num_floors = 10  # Ilość pięter
+        self.floor_height = int(SCREEN_HEIGHT * 0.45)
+        self.num_floors = 10
         self.level_height = self.num_floors * self.floor_height
         self.lowest_platform = None 
         if_enemies = False
@@ -186,8 +184,8 @@ class Game:
 
         for floor in range(self.num_floors):
             floor_x = 0
-            floor_y = self.level_height - (floor + 1) * self.floor_height  # Pozycja Y piętra
-            floor_width = SCREEN_WIDTH  # Szerokość piętra
+            floor_y = self.level_height - (floor + 1) * self.floor_height
+            floor_width = SCREEN_WIDTH
             if floor == self.num_floors-1:
                 if_enemies = False
             floor = Floor(floor_x, floor_y, floor_width, self.floor_height, if_enemies)
@@ -223,13 +221,13 @@ class Game:
             self.winner_text = "Przegrana"
             SOUNDS['SOUNDTRACK'].stop()
             SOUNDS['LOSE'].play()
-            game_over_screen(self.winner_text, self.points)
+            game_over_screen(self.winner_text, self.points, self.num_floors)
         if self.mode == 'speedrun' and current_time >= level_time:
             self.running = False
             self.winner_text = "Koniec czasu"
             SOUNDS['SOUNDTRACK'].stop()
             SOUNDS['LOSE'].play()
-            game_over_screen(self.winner_text, self.points)
+            game_over_screen(self.winner_text, self.points, self.num_floors)
         self.all_sprites.update(self.platforms)
         self.camera.update(self.player)
         if self.player.rect.y + self.player.height >= self.lowest_platform.y + self.floor_height:
@@ -237,7 +235,7 @@ class Game:
             SOUNDS['SOUNDTRACK'].stop()
             SOUNDS['WIN'].play()
             self.winner_text = "Wygrana"
-            game_over_screen(self.winner_text, self.points)
+            game_over_screen(self.winner_text, self.points, self.num_floors)
         for floor in self.floors:
             for enemy in floor.enemies:
                 enemy.update()
@@ -296,9 +294,8 @@ def start_screen():
     text_color_exit = WHITE
 
     while running:
-        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))  # Wypełnienie ekranu czarnym kolorem
+        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))
 
-        # Wyswietlanie tytulu
         title_text1 = MENU_FONT.render("Super House of", True, PINK)
         title_rect1 = title_text1.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80))
         WINDOW.blit(title_text1, title_rect1)
@@ -307,7 +304,6 @@ def start_screen():
         title_rect2 = title_text2.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20))
         WINDOW.blit(title_text2, title_rect2)
 
-        # Wyswietlanie opcji menu
         start_text_surface = MENU_FONT.render("Start", True, text_color_start)
         start_rect = start_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
         WINDOW.blit(start_text_surface, start_rect)
@@ -320,7 +316,7 @@ def start_screen():
         exit_rect = exit_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 150))
         WINDOW.blit(exit_text_surface, exit_rect)
 
-        pygame.display.flip()  # Odświeżenie ekranu
+        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -368,14 +364,12 @@ def settings_screen():
     text_color_speedrun = WHITE
 
     while running:
-        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))  # Wypełnienie ekranu tłem ustawień
+        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))
 
-        # Wyświetlanie tytułu
         title_text = TITLE_FONT.render("Ustawienia", True, PINK)
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80))
         WINDOW.blit(title_text, title_rect)
 
-        # Wyświetlanie opcji ustawień
         back_text_surface = MENU_FONT.render("Powrót", True, text_color_back)
         back_rect = back_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
         WINDOW.blit(back_text_surface, back_rect)
@@ -400,7 +394,7 @@ def settings_screen():
         speedrun_rect = speedrun_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 270))
         WINDOW.blit(speedrun_text_surface, speedrun_rect)
 
-        pygame.display.flip()  # Odświeżenie ekranu
+        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -432,7 +426,7 @@ def settings_screen():
                 mouse_pos = pygame.mouse.get_pos()
                 if back_rect.collidepoint(mouse_pos):
                     running = False
-                    start_screen()  # Powrót do ekranu startowego
+                    start_screen()
                 elif sound_rect.collidepoint(mouse_pos):
                     volume_settings()
                 elif normal_rect.collidepoint(mouse_pos):
@@ -456,14 +450,12 @@ def volume_settings():
     text_color_proc_100 = WHITE
 
     while running:
-        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))  # Wypełnienie ekranu tłem ustawień
+        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))
 
-        # Wyświetlanie tytułu
         title_text = TITLE_FONT.render("Ustawienia", True, PINK)
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80))
         WINDOW.blit(title_text, title_rect)
 
-        # Wyświetlanie opcji ustawień
         back_text_surface = MENU_FONT.render("Powrót", True, text_color_back)
         back_rect = back_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
         WINDOW.blit(back_text_surface, back_rect)
@@ -492,7 +484,7 @@ def volume_settings():
         proc_100_rect = proc_100_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 310))
         WINDOW.blit(proc_100_text_surface, proc_100_rect)
 
-        pygame.display.flip()  # Odświeżenie ekranu
+        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -528,7 +520,7 @@ def volume_settings():
                 mouse_pos = pygame.mouse.get_pos()
                 if back_rect.collidepoint(mouse_pos):
                     running = False
-                    start_screen()  # Powrót do ekranu startowego
+                    start_screen()
                 elif mute_rect.collidepoint(mouse_pos): 
                     for sound in SOUNDS.values():
                         sound.set_volume(0.0)
@@ -546,7 +538,7 @@ def volume_settings():
                         sound.set_volume(1.0)
                 SOUNDS['TEST'].play()
                  
-def game_over_screen(text, points):
+def game_over_screen(text, points, levels):
     running = True
     global mode
     text_color_start = WHITE
@@ -554,18 +546,16 @@ def game_over_screen(text, points):
     text_color_exit = WHITE
 
     while running:
-        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))  # Wypełnienie ekranu czarnym kolorem
+        WINDOW.blit(BACKGROUND_SETTINGS, (0, 0))
 
-        # Wyswietlanie tytulu
         title_text1 = TITLE_FONT.render(text, True, PINK)
         title_rect1 = title_text1.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80))
         WINDOW.blit(title_text1, title_rect1)
         
-        title_text1 = MENU_FONT.render("liczba punktow: " + str(points) + "/" + str(8), True, PINK)
+        title_text1 = MENU_FONT.render("liczba punktow: " + str(points) + "/" + str(levels-2), True, PINK)
         title_rect1 = title_text1.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         WINDOW.blit(title_text1, title_rect1)
 
-        # Wyswietlanie opcji menu
         start_text_surface = MENU_FONT.render("Zagraj jeszcze raz", True, text_color_start)
         start_rect = start_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100))
         WINDOW.blit(start_text_surface, start_rect)
@@ -578,7 +568,7 @@ def game_over_screen(text, points):
         exit_rect = exit_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200))
         WINDOW.blit(exit_text_surface, exit_rect)
 
-        pygame.display.flip()  # Odświeżenie ekranu
+        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
