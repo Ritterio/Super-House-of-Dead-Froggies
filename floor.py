@@ -17,15 +17,12 @@ class Floor:
     def create_platforms(self, if_enemies):
         offset = 50
 
-        # Boczne ściany
         left_wall = Platform(self.x, self.y + self.height, WALL_THICKNESS, self.height)
         right_wall = Platform(self.x + self.width - WALL_THICKNESS, self.y + self.height, WALL_THICKNESS, self.height)
 
-        # przerwa miedzy poziomymi platformami
         gap_width = 200
         gap_x = random.randint(WALL_THICKNESS + offset, self.width - WALL_THICKNESS - gap_width - offset)  # Losowa pozycja X dziury
 
-        # Platformy górne
         horizontal_platform1_width = gap_x - WALL_THICKNESS
         horizontal_platform2_x = self.x + gap_x + gap_width
         horizontal_platform2_width = self.width - gap_x - gap_width - WALL_THICKNESS
@@ -60,30 +57,24 @@ class Floor:
         pass
 
     def draw(self, surface):
-        # self.platforms.draw(surface)  # Rysowanie platform
-        # for enemy in self.enemies:
-        #     enemy.draw(surface) 
-        # self.enemies.draw(surface)  # Rysowanie przeciwników
         pass
 
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
-        # Inicjalizacja platformy
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.image = pygame.Surface((self.width, abs(self.height)))  # Używamy wartości bezwzględnej dla wysokości
-        self.image.fill(PINK)  # Wypełnienie powierzchni białym kolorem
+        self.image = pygame.Surface((self.width, abs(self.height)))
+        self.image.fill(PINK)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
         
-    def draw(self, surface):
-        # Rysowanie platformy na powierzchni
-        surface.blit(self.image, self.rect)
+    def draw(self):
+        pass
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -96,7 +87,7 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = "right"
         self.speed = 4
         self.hearts = 3
-        self.filter_duration = 1.0  # Czas trwania nakładania filtru w sekundach
+        self.filter_duration = 1.0 #s
         self.filter_start_time = None
 
     def update(self):
@@ -124,15 +115,6 @@ class Enemy(pygame.sprite.Sprite):
     
     def turn_red(self):
         self.filter_start_time = time.time()
-        
-    #   self.animate()
-
-    # def animate(self):
-    #     self.animation_counter += 1
-    #     if self.animation_counter >= self.animation_delay:
-    #         self.animation_counter = 0
-    #         self.animation_index = (self.animation_index + 1) % len(self.images)
-    #         self.image = self.images[self.animation_index]
 
     def draw(self):
         pass
