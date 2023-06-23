@@ -26,7 +26,6 @@ ENEMY_WIDTH, ENEMY_HEIGHT = 100, 100
 HEART_WIDTH, HEART_HEIGHT = 50, 50
 FLOWER_WIDTH, FLOWER_HEIGHT = 50, 50
 
-# grafiki
 path = os.path.join(os.getcwd(), 'images')
 file_names = sorted(os.listdir(path))
 BACKGROUND = pygame.image.load(os.path.join(path, 'background_settings.jpg')).convert()
@@ -34,7 +33,6 @@ BACKGROUND = pygame.transform.scale(BACKGROUND, (SCREEN_WIDTH, SCREEN_HEIGHT))
 BACKGROUND_SETTINGS = pygame.image.load(os.path.join(path, 'background_settings.jpg')).convert()
 BACKGROUND_SETTINGS = pygame.transform.scale(BACKGROUND_SETTINGS, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-#file_names.remove('background.jpg')
 file_names.remove('background_settings.jpg')
 IMAGES = {}
 for file_name in file_names:
@@ -50,7 +48,6 @@ IMAGES['BULLET'] = pygame.transform.scale(IMAGES['BULLET'], (40, 40))
 IMAGES['BULLET_L'] = pygame.transform.scale(IMAGES['BULLET_L'], (40, 40))
 
 
-#dzwieki
 path = os.path.join(os.getcwd(), 'sounds')
 file_names = sorted(os.listdir(path))
 
